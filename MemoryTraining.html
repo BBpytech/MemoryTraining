@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Training Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            text-align: center;
+        }
+        .hidden {
+            visibility: hidden;
+        }
+        .spaced-number {
+            letter-spacing: 0.8em;
+            font-size: 2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="game_div"   style="background-color: cadetblue;">
+    <h1>Memory Training Game</h1>
+    
+    <label for="timeInput">Set timer (seconds): </label>
+    <input type="number" id="timeInput" value="5" min="1" max="30">
+    <br><br>
+
+    <div id="game" >
+        <h2 id="instruction">Remember this number:</h2>
+        <div id="number" class="spaced-number"></div>
+        <input type="text" id="userInput" class="hidden" placeholder="Enter the number">
+        <button id="submitBtn" class="hidden">Submit</button>
+        <h3 id="feedback"></h3>
+    </div>
+
+    <script>
+        let digits = 2;  // იწყება 2-ნიშნა რიცხვით
+        let attempts = 0;  // მცდელობების მთვლელი
+        let level = 1;  // დონე
+        let randomNumber = 0;
+
+        function generateRandomNumber(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function formatNumberWithSpaces(number) {
+            return number.toString().replace(/(.{4})/g, "$1 ");
+        }
+
+        function startMemoryTraining() {
+            randomNumber = generateRandomNumber(digits);
+            const formattedNumber = formatNumberWithSpaces(randomNumber);
+            document.getElementById("number").textContent = formattedNumber;
+            document.getElementById("userInput").classList.add("hidden");
+            document.getElementById("submitBtn").classList.add("hidden");
+            document.getElementById("feedback").textContent = "";  // ნოტიფიკაციების გასუფთავება
+
+            // წამების დრო მომხმარებლის მიერ
+            const displayTime = parseInt(document.getElementById("timeInput").value) * 1000;
+
+            // აჩვენებს რიცხვს მომხმარებლის მიერ მითითებული დროის განმავლობაში
+            setTimeout(() => {
+                document.getElementById("number").textContent = '';
+                document.getElementById("userInput").value = '';
+                document.getElementById("userInput").classList.remove("hidden");
+                document.getElementById("submitBtn").classList.remove("hidden");
+            }, displayTime);
+        }
+
+        document.getElementById("submitBtn").addEventListener("click", function() {
+            const userInput = document.getElementById("userInput").value;
+            const feedback = document.getElementById("feedback");
+
+            if (userInput == randomNumber) {
+                feedback.textContent = "Correct! Moving to the next level.";
+                attempts = 0;
+                digits += 1;
+                if (digits % 4 === 0) {
+                    level += 1;
+                    feedback.textContent += ` Congratulations! You have completed level ${level}. Moving to level ${level + 1}.`;
+                }
+            } else {
+                feedback.textContent = `Incorrect. The correct number was: ${randomNumber}`;
+                attempts += 1;
+                if (attempts === 3) {
+                    feedback.textContent += ` You have made 3 incorrect attempts. Going back one level.`;
+                    digits = Math.max(2, digits - 1);
+                    attempts = 0;  // მცდელობები ნულდება დონის დაკლებისას
+                } else {
+                    feedback.textContent += ` You have ${3 - attempts} tries left.`;
+                }
+            }
+            setTimeout(startMemoryTraining, 3000);  // ნოტიფიკაციის შემდეგ 3 წამი პაუზა და შემდეგი ტური
+        });
+
+        // დაიწყებს პირველ ტურს
+        startMemoryTraining();
+    </script>
+    </div>
+    <div  id="text"  style="background-color: cornflowerblue;"> 
+        <h2>Why Memory Training Matters</h2>
+
+       <article style="text-align: left;padding:10px; font-family: Verdana;">  Memory training games like this one are designed to enhance cognitive functions such as concentration,
+         recall, and problem-solving. By challenging yourself to remember sequences and patterns, 
+         you're giving your brain a workout that strengthens neural pathways. Studies show that regular mental
+        exercises improve memory retention, increase focus, and even delay cognitive decline.
+         Whether you're looking to sharpen your mind or just have fun, memory training can benefit your brain 
+         in numerous ways.
+        </article>
+    </div>
+         <div style="width: 100%;margin: 10px; display: flex; justify-content: center;">
+          
+
+             <img src="/Users/bossmajor/Desktop/brain tryining.png"  style=" width: 100%; height: auto;"> </div>
+         
+
+</body>
+</html>
